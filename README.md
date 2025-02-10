@@ -1,4 +1,5 @@
-# 506-final-project
+# 506-final-project 
+# NewsToStocks
 
 ## Description
 News Vs. Stock price analysis. Based on recent articles from sources such as NYT, etc. how does one article result in stock price increase or decrease.
