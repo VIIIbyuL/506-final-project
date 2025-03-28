@@ -1,0 +1,7 @@
+article_id,company,ticker,text,timestamp,finbert_sentiment_label,finbert_confidence_percent
+1,Apple,AAPL,"Apple reports record earnings in Q1 2024.",2024-04-01 10:00,Positive,95.49
+2,Tesla,TSLA,"Tesla faces probe over self-driving incidents.",2024-04-02 10:30,Negative,96.90
+3,Amazon,AMZN,"Amazon expands into new international markets.",2024-04-03 11:00,Positive,59.09
+4,Microsoft,MSFT,"Microsoft's Azure growth slows down this quarter.",2024-04-04 11:30,Negative,96.31
+5,NVIDIA,NVDA,"NVIDIA reported a significant increase in revenue from its AI chip segment.",2024-04-05 12:00,Positive,73.49
+6,XYZ Corporation,XYZ,"XYZ Corporation reported its quarterly earnings today.",2024-04-06 09:00,Neutral,98.00
