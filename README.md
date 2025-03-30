@@ -130,7 +130,7 @@ Random was the best case performance with the other strategies simulating other 
 
 - sentiment confidence were the top predictors as in th emodel relied heavily on finBERT outputs
 - time had minimal impact signals
-- model strong on random but decetn in time based simualtions
+- model strong on random but decent in time based simualtions
 - possible noise because sentiment does not make up all of market reaction
 
 ---
@@ -140,7 +140,9 @@ Random was the best case performance with the other strategies simulating other 
 - add generalizations, instead of 5 companies we use something like BERT to allow us to predict any company stock
 - maybe use other classifiers to boost performance
 - develop a dashboard or API for live testing
-- include additional features like volaitility or trade volume or indicators to expand 
+- include additional features like volaitility or trade volume or indicators to expand
+- need to get more article data, the api has limits and it's hard to scrape data
+- the model doesn't exactly train by group specifically, just views it indiscriminatly
 
 ---
 
