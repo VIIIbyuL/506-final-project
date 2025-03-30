@@ -132,7 +132,7 @@ Random was the best case performance with the other strategies simulating other 
 - time had minimal impact signals
 - model strong on random but decetn in time based simualtions
 - possible noise because sentiment does not make up all of market reaction
-
+- actually shows some correlation between article sentiment and stock pricing
 ---
 
 ## 6. What’s Next
@@ -141,7 +141,7 @@ Random was the best case performance with the other strategies simulating other 
 - maybe use other classifiers to boost performance
 - develop a dashboard or API for live testing
 - include additional features like volaitility or trade volume or indicators to expand 
-
+- The model gives us a baseline that we can now improve with better features, more companies, or more complex modeling for the final.
 ---
 
 
