@@ -1,3 +1,10 @@
+"""
+This script fetches the price change percentage of a stock from Yahoo Finance
+for a given date and adds this information to a CSV file containing articles
+with their corresponding companies and dates. The script uses the yfinance
+library to fetch stock data and pandas for data manipulation.
+"""
+
 import pandas as pd
 import yfinance as yf
 import datetime

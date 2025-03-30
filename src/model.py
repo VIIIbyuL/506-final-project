@@ -1,3 +1,12 @@
+"""
+    Model evaluation and visualization for the alignment prediction task.
+    This script includes functions for loading data, preparing features,
+    and evaluating the model using different methods: random split,
+    time-based split, and k-fold cross-validation.
+    It also includes functions for visualizing the results, such as
+    confusion matrices and feature importances.
+"""
+
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
@@ -35,7 +44,6 @@ def save_kfold_scores(scores, filename="kfold_scores.png"):
     plt.close()
 
 # load + prep
-
 def load_data(csv_path):
     df = pd.read_csv(csv_path)
     df = df.dropna(subset=["alignment_label", "finbert_sentiment_label", "finbert_confidence_percent", "Date"])
@@ -53,7 +61,6 @@ def prepare_features(df):
     return X, y
 
 # evals
-
 def random_split_evaluation(X, y):
     print("\n [1] RANDOM TRAIN/TEST SPLIT")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)

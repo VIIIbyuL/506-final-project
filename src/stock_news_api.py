@@ -1,3 +1,6 @@
+"""
+scrapes news articles for a list of companies using the Finnhub API and saves them to a CSV file.
+"""
 import finnhub
 import requests
 import pandas as pd

@@ -132,12 +132,12 @@ Random was the best case performance with the other strategies simulating other 
 - time had minimal impact signals
 - model strong on random but decent in time based simualtions
 - possible noise because sentiment does not make up all of market reaction
-
+- actually shows some correlation between article sentiment and stock pricing
 ---
 
 ## 6. What’s Next
 
-- add generalizations, instead of 5 companies we use something like BERT to allow us to predict any company stock
+- add generalizations, instead of 5 companies we use something like NER models to find company name in an article and allow us to predict any company stock
 - maybe use other classifiers to boost performance
 - develop a dashboard or API for live testing
 - include additional features like volaitility or trade volume or indicators to expand

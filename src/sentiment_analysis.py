@@ -1,3 +1,10 @@
+"""
+Sentiment Analysis using FinBERT
+This script performs sentiment analysis on company news articles using the FinBERT model.
+It reads a CSV file containing articles, processes the summaries using the FinBERT model,
+and saves the results (sentiment labels and confidence scores) to a new CSV file.
+"""
+
 import pandas as pd
 from transformers import pipeline
 
