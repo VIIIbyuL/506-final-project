@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import time
 
 # Finnhub API Key
-FINNHUB_API_KEY = "cvi916pr01qks9q91q00cvi916pr01qks9q91q0g"
+FINNHUB_API_KEY = ""
 
 # Initialize Finnhub client
 finnhub_client = finnhub.Client(api_key=FINNHUB_API_KEY)
