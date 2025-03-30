@@ -1,3 +1,12 @@
+"""
+    Model evaluation and visualization for the alignment prediction task.
+    This script includes functions for loading data, preparing features,
+    and evaluating the model using different methods: random split,
+    time-based split, and k-fold cross-validation.
+    It also includes functions for visualizing the results, such as
+    confusion matrices and feature importances.
+"""
+
 import pandas as pd
 import os
 import matplotlib.pyplot as plt

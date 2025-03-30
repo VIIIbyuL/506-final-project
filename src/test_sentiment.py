@@ -1,3 +1,6 @@
+"""
+just testing the sentiment analysis
+"""
 # import SentimentIntensityAnalyzer class from vaderSentiment.vaderSentiment module.
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
