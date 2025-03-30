@@ -90,15 +90,56 @@ def kfold_evaluation(X, y):
     print("Mean Accuracy:", scores.mean())
     save_kfold_scores(scores)
 
+def predict_next_day(df, num_days=7):
+    # Sort the data by Date
+    df_sorted = df.sort_values("Date")
+
+    # Loop through each unique ticker (company)
+    for ticker in df_sorted["Ticker"].unique():
+        print(f"\nPredicting next day's trend for {ticker}:")
+
+        # Get the data for the specific company
+        company_data = df_sorted[df_sorted["Ticker"] == ticker]
+        
+        # Get the last `num_days` of data for this company (e.g., last 7 days)
+        recent_data = company_data.tail(num_days)
+
+        # Prepare the feature for prediction based on the last `num_days` of data
+        feature = {
+            "sentiment_encoded": recent_data["sentiment_encoded"].mean(),  # Averaging sentiment over past week
+            "finbert_confidence_percent": recent_data["finbert_confidence_percent"].mean(),  # Averaging confidence over past week
+            "day_of_week": recent_data["day_of_week"].mode()[0],  # Mode of the days of the week
+            "month": recent_data["month"].mode()[0]  # Mode of the months (likely the same for all)
+        }
+
+        # Convert the feature into a DataFrame
+        feature_df = pd.DataFrame([feature])
+
+        # Train a model on the entire dataset
+        X, y = prepare_features(df_sorted)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        clf = RandomForestClassifier(random_state=42)
+        clf.fit(X_train, y_train)
+
+        # Predict the trend for the next day (up or down)
+        prediction = clf.predict(feature_df)
+        prediction_proba = clf.predict_proba(feature_df)
+
+        # Output the prediction for the next day
+        print("Prediction for the next day (based on the last 7 days of data):")
+        print("Trend:", "Up" if prediction[0] == 1 else "Down/No Change")
+        print("Prediction probability:", prediction_proba[0])
+
 # main
 
 def main():
-    df = load_data("data/articles_with_alignment_labels.csv")
+    df = load_data("../data/articles_with_alignment_labels.csv")
     X, y = prepare_features(df)
 
     random_split_evaluation(X, y)
     time_split_evaluation(df)
     kfold_evaluation(X, y)
+    predict_next_day(df, num_days=7)
 
 if __name__ == "__main__":
     main()
