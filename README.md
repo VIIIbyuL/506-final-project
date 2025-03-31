@@ -22,7 +22,7 @@ First, we’d need to use a NLP model to more accurately understand the meaning 
 
 ## Data Visualization
 
-We plan on using scatter plots to plot the sentiment scores versus the stock price variations to view changes. Additionally, we would have a time series plot to view the stock price fluctuations while marking article release. Finally, we would have heatmaps to view the correlation matrix between sentiment and stock price changes.
+We plan on using scatter plots, box plots, and other various data visualization methods to plot the sentiment scores versus the stock price variations to view changes. Additionally, we would have a time series plot to view the stock price fluctuations while marking article release. Finally, we would have heatmaps to view the correlation matrix between sentiment and stock price changes.
 
 ## Test Plan
 To ensure reliability in our model we will implement:
@@ -82,6 +82,25 @@ Each of these bars in this chart shows the accuracy on different chunks of the d
 
 ---
 
+### D. Price Change Counts Per Company
+![Apple Count Price Change](visual/price_change_counts_apple.png)
+![Amazon Count Price Change](visual/price_change_counts_amazon.png)
+![Tesla Count Price Change](visual/price_change_counts_tesla.png)
+
+Each company depicted shows the number of new articles associated with each price fluctuation. Each price is categorized as it's own "bucket" storing n number of news articles/counts. Describes the relationship between the price fluctuations and article release.
+
+### E. Sentiment Counts Per Company
+![Apple Count Price Change](visual/sentiment_counts_apple.png)
+![Amazon Count Price Change](visual/sentiment_counts_amazon.png)
+![Tesla Count Price Change](visual/sentiment_counts_tesla.png)
+
+Each company depicted shows the total number of each sentiment that appeared in the news within the researched time frame. Generally shows the public opinion/news view on the company.
+
+### F. Sentiment Trends of Each Company Overtime
+![Sentiment Changes Over time](visual/sentiment_trends_over_time.png)
+
+Chart displays the change on sentiment counts across companies over time. General spikes shows increasing news trends that affect specific industries or company patterns.
+
 ## 2. Data Processing Description
 
 We processed article-level news data from finhub and linked it with sentiment:
@@ -133,16 +152,22 @@ Random was the best case performance with the other strategies simulating other 
 - model strong on random but decent in time based simualtions
 - possible noise because sentiment does not make up all of market reaction
 - actually shows some correlation between article sentiment and stock pricing
+- the model's performance exhibits bias, as it is trained exclusively on news data
+
 ---
 
 ## 6. What’s Next
 
 - add generalizations, instead of 5 companies we use something like NER models to find company name in an article and allow us to predict any company stock
 - maybe use other classifiers to boost performance
+- add a control variable to compare the specific stock price to (S&P 500)
+- add stock price at the start of the day
+- add stock price at the end of the day
 - develop a dashboard or API for live testing
 - include additional features like volaitility or trade volume or indicators to expand
 - need to get more article data, the api has limits and it's hard to scrape data
 - the model doesn't exactly train by group specifically, just views it indiscriminatly
+- add an emotional review of the article instead of just sentiment (positive, but happy; positive, but excited)
 
 ---
 

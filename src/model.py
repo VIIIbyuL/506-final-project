@@ -43,7 +43,67 @@ def save_kfold_scores(scores, filename="kfold_scores.png"):
     plt.savefig(f"visual/{filename}")
     plt.close()
 
-# load + prep
+def plot_sentiment_counts_per_company(df, company_name, filename):
+    company_df = df[df["Company"] == company_name]
+    sentiment_counts = company_df["finbert_sentiment_label"].value_counts()
+
+    plt.figure(figsize=(8, 5))
+    plt.bar(sentiment_counts.index, sentiment_counts.values, color=['orange', 'red', 'green'])
+    plt.title(f'Sentiment Counts for {company_name}')
+    plt.xlabel('Sentiment Labels')
+    plt.ylabel('Counts')
+    plt.xticks(rotation=45)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.savefig(f"visual/{filename}")
+    plt.close()
+
+def plot_sentiment_trends_over_time(df, sentiment_column='finbert_sentiment_label'):
+    df['Date'] = pd.to_datetime(df['Date']).dt.date
+    sentiment_counts = df.groupby(['Date', 'Company', sentiment_column]).size().unstack(fill_value=0)
+    companies = sentiment_counts.index.get_level_values('Company').unique()
+    num_companies = len(companies)
+    fig, axes = plt.subplots(num_companies, 1, figsize=(10, 4 * num_companies), sharex=True)
+
+    # Determine the maximum Y-axis limit across all companies
+    max_count = sentiment_counts.max().max()
+
+    # Plot data for each company
+    for ax, company in zip(axes, companies):
+        company_data = sentiment_counts.xs(company, level='Company')
+        company_data.plot(kind='line', marker='o', ax=ax)
+        ax.set_title(f'Sentiment Trends Over Time for {company}')
+        ax.set_ylabel('Number of Sentiments')
+        ax.grid(axis='y', linestyle='--', alpha=0.7)
+        ax.set_ylim(0, max_count)
+        ax.legend(title='Sentiment Labels', loc='upper left', labels=company_data.columns)
+    plt.xlabel('Date')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig("visual/sentiment_trends_over_time.png")
+    plt.close()
+
+def plot_price_change_counts_for_company(df, company_name, filename):
+    # Filter the DataFrame for the specified company
+    company_df = df[df['Company'] == company_name]
+
+    # Count occurrences of each price_change_percent for the company
+    price_change_counts = company_df['price_change_percent'].value_counts()
+
+    # Sort the price change counts by the index (price_change_percent) in ascending order
+    price_change_counts = price_change_counts.sort_index()
+
+    # Create a bar plot
+    price_change_counts.plot(kind='bar', figsize=(10, 6), width=0.8, color='skyblue')
+
+    plt.title(f'Count of Price Change Percent for {company_name}')
+    plt.xlabel('Price Change Percent')
+    plt.ylabel('Count')
+    plt.xticks(rotation=45)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+    plt.savefig(f"visual/{filename}")
+    plt.close()
+
 def load_data(csv_path):
     df = pd.read_csv(csv_path)
     df = df.dropna(subset=["alignment_label", "finbert_sentiment_label", "finbert_confidence_percent", "Date"])
@@ -140,13 +200,20 @@ def predict_next_day(df, num_days=7):
 # main
 
 def main():
-    df = load_data("../data/articles_with_alignment_labels.csv")
+    df = load_data("data/articles_with_alignment_labels.csv")
     X, y = prepare_features(df)
 
     random_split_evaluation(X, y)
     time_split_evaluation(df)
     kfold_evaluation(X, y)
     predict_next_day(df, num_days=7)
+    plot_sentiment_counts_per_company(df, "Apple", filename="sentiment_counts_apple.png")
+    plot_sentiment_counts_per_company(df, "Amazon", filename="sentiment_counts_amazon.png")
+    plot_sentiment_counts_per_company(df, "Tesla", filename="sentiment_counts_tesla.png")
+    plot_sentiment_trends_over_time(df)
+    plot_price_change_counts_for_company(df, "Apple", filename="price_change_counts_apple.png")
+    plot_price_change_counts_for_company(df, "Amazon", filename="price_change_counts_amazon.png")
+    plot_price_change_counts_for_company(df, "Tesla", filename="price_change_counts_tesla.png")   
 
 if __name__ == "__main__":
     main()
