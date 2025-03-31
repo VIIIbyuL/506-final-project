@@ -10,9 +10,11 @@
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay, mean_absolute_error
 
 # visualizations
 def save_confusion(y_true, y_pred, title, filename):
@@ -44,6 +46,7 @@ def save_kfold_scores(scores, filename="kfold_scores.png"):
     plt.close()
 
 # load + prep
+
 def load_data(csv_path):
     df = pd.read_csv(csv_path)
     df = df.dropna(subset=["alignment_label", "finbert_sentiment_label", "finbert_confidence_percent", "Date"])
@@ -61,6 +64,7 @@ def prepare_features(df):
     return X, y
 
 # evals
+
 def random_split_evaluation(X, y):
     print("\n [1] RANDOM TRAIN/TEST SPLIT")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -97,45 +101,81 @@ def kfold_evaluation(X, y):
     print("Mean Accuracy:", scores.mean())
     save_kfold_scores(scores)
 
-def predict_next_day(df, num_days=7):
-    # Sort the data by Date
-    df_sorted = df.sort_values("Date")
+def prepare_features_for_prediction(df, days_back):
+    features = []
+    target = []
+    
+    # Sort dataframe by Date in ascending order (ensure correct order)
+    df = df.sort_values("Date")
+    
+    # Get the latest `days_back` distinct dates
+    latest_dates = df['Date'].drop_duplicates().tail(days_back).values
+    
+    # Loop through the latest `days_back` dates
+    for date in latest_dates:
+        # Filter data for the current date
+        day_window = df[df['Date'] == date]
+        # Ensure there are articles for the current day
+        if len(day_window) > 0:
+            # Average the features across all articles for the day
+            confidence_values = day_window['finbert_confidence_percent'].mean()
+            day_of_week_values = day_window['day_of_week'].mode()[0]  # Take the most frequent day of week
+            month_values = day_window['month'].mode()[0]  # Take the most frequent month
+            
+            # Count the number of positive, neutral, and negative articles
+            positive_count = day_window[day_window['sentiment_encoded'] == 1].shape[0]
+            negative_count = day_window[day_window['sentiment_encoded'] == -1].shape[0]
+            neutral_count = day_window[day_window['sentiment_encoded'] == 0].shape[0]
 
-    # Loop through each unique ticker (company)
-    for ticker in df_sorted["Ticker"].unique():
-        print(f"\nPredicting next day's trend for {ticker}:")
+            # Calculate the total number of articles for normalization
+            total_articles = len(day_window)
 
-        # Get the data for the specific company
-        company_data = df_sorted[df_sorted["Ticker"] == ticker]
+            # Compute the proportions of each sentiment
+            positive_ratio = positive_count / total_articles
+            negative_ratio = negative_count / total_articles
+            neutral_ratio = neutral_count / total_articles
+
+            # Now include these proportions as features
+            features.append(np.array([positive_ratio, negative_ratio, neutral_ratio, confidence_values, day_of_week_values, month_values]))
+            target.append(day_window['price_change_percent'].iloc[0])  # Use the first price_change_percent for this date (assuming it's the same for the day)
+    
+    features = np.array(features)
+    target = np.array(target)
+    return features, target
+
+
+def train_model(X_train, y_train):
+    model = RandomForestRegressor(random_state=42)
+    model.fit(X_train, y_train)
+    return model
+
+# Prediction for each company
+
+def predict_for_each_company(df, days_back):
+    print("\n [4] NEXT DAY PREDICTIONS")
+    companies = df["Company"].unique()
+    
+    predictions = []
+    
+    for company in companies:
+        company_df = df[df["Company"] == company]
+        X, y = prepare_features_for_prediction(company_df, days_back)
         
-        # Get the last `num_days` of data for this company (e.g., last 7 days)
-        recent_data = company_data.tail(num_days)
-
-        # Prepare the feature for prediction based on the last `num_days` of data
-        feature = {
-            "sentiment_encoded": recent_data["sentiment_encoded"].mean(),  # Averaging sentiment over past week
-            "finbert_confidence_percent": recent_data["finbert_confidence_percent"].mean(),  # Averaging confidence over past week
-            "day_of_week": recent_data["day_of_week"].mode()[0],  # Mode of the days of the week
-            "month": recent_data["month"].mode()[0]  # Mode of the months (likely the same for all)
-        }
-
-        # Convert the feature into a DataFrame
-        feature_df = pd.DataFrame([feature])
-
-        # Train a model on the entire dataset
-        X, y = prepare_features(df_sorted)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        clf = RandomForestClassifier(random_state=42)
-        clf.fit(X_train, y_train)
-
-        # Predict the trend for the next day (up or down)
-        prediction = clf.predict(feature_df)
-        prediction_proba = clf.predict_proba(feature_df)
-
-        # Output the prediction for the next day
-        print("Prediction for the next day (based on the last 7 days of data):")
-        print("Trend:", "Up" if prediction[0] == 1 else "Down/No Change")
-        print("Prediction probability:", prediction_proba[0])
+        # Train model for the company
+        model = train_model(X, y)
+        
+        # Get predicted trend (Up or Down)
+        predicted_price_change = model.predict(X[-1].reshape(1, -1))[0]
+        trend = "Up" if predicted_price_change > 0 else "Down"
+        
+        # Store predictions
+        predictions.append({
+            "Company": company,
+            "Predicted Trend": trend,
+            "Predicted Price Change (%)": predicted_price_change
+        })
+    
+    return predictions
 
 # main
 
@@ -146,7 +186,13 @@ def main():
     random_split_evaluation(X, y)
     time_split_evaluation(df)
     kfold_evaluation(X, y)
-    predict_next_day(df, num_days=7)
+    
+    # Predict for each company
+    predictions = predict_for_each_company(df, 7)
+    
+    # Print the predictions for each company
+    for prediction in predictions:
+        print(f"Company: {prediction['Company']}\nPredicted Trend: {prediction['Predicted Trend']}\nPredicted Price Change: {prediction['Predicted Price Change (%)']}%")
 
 if __name__ == "__main__":
     main()
