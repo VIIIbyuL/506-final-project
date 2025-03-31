@@ -125,7 +125,7 @@ We processed article-level news data from finhub and linked it with sentiment:
 
 We tried to solve this as a binary classification problem to determine whether we can predict that an article sentiment aligns with short term stock price changes.
 
-We used RandomFOrestClassifier with a target variable of the alignment label and features mentioned above to train it.
+We used RandomForestClassifier with a target variable of the alignment label and features mentioned above to train it.
 
 ### Evaluation Strategies
 
