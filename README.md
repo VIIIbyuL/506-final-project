@@ -106,7 +106,7 @@ We processed article-level news data from finhub and linked it with sentiment:
 
 We tried to solve this as a binary classification problem to determine whether we can predict that an article sentiment aligns with short term stock price changes.
 
-We used RandomFOrestClassifier with a target variable of the alignment label and features mentioned above to train it.
+We used RandomForestClassifier with a target variable of the alignment label and features mentioned above to train it.
 
 ### Evaluation Strategies
 
@@ -133,6 +133,7 @@ Random was the best case performance with the other strategies simulating other 
 - model strong on random but decent in time based simualtions
 - possible noise because sentiment does not make up all of market reaction
 - actually shows some correlation between article sentiment and stock pricing
+- 
 ---
 
 ## 6. What’s Next
@@ -143,6 +144,8 @@ Random was the best case performance with the other strategies simulating other 
 - include additional features like volaitility or trade volume or indicators to expand
 - need to get more article data, the api has limits and it's hard to scrape data
 - the model doesn't exactly train by group specifically, just views it indiscriminatly
+- ensure the market price change aligns by day
+- this is only a one time prediction, not exactly an incrementive learning model
 
 ---
 
