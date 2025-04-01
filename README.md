@@ -33,7 +33,7 @@ To ensure reliability in our model we will implement:
 # Midterm Report – News Sentiment vs. Stock Price Alignment
 
 ## Midterm Presentation Video  
-[Insert YouTube link here]
+[https://www.youtube.com/watch?v=xR99wpB2_nc&ab_channel=ChangWang]
 
 ---
 
