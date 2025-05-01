@@ -123,7 +123,7 @@ We processed article-level news data from finhub and linked it with sentiment:
    - confidence percentages
    - day of the wekk
    - month
-6. added market context features:
+6. added market context features for the final version after testing:
    - prev_day_change: Stock price change for the article’s company on the day before publication.
    - sp500_change: S&P 500 index change over the article date and the next day.
    - nasdaq_change: NASDAQ index change over the same period.
@@ -213,7 +213,7 @@ Cross-validation provides robustness by averaging performance over multiple trai
 
 ---
 
-## 6. What’s Next
+## 6. Possible Improvements
 
 - add generalizations, instead of hardcoded companies we use something like NER models to find company name in an article and allow us to predict any company stock
 - maybe use other classifiers to boost performance
