@@ -9,7 +9,7 @@ Runs the full end-to-end pipeline:
 """
 
 
-from sentiment_analysis import run_sentiment_pipeline
+from sentiment_analysis import add_sentiment_from_summary_to_csv
 from price_fetching import add_price_change_to_csv
 from generate_labels import build_alignment_dataset
 from model import main as run_all_evaluations
@@ -24,7 +24,7 @@ def main():
     # run_news_scraper("data/company_news_v2.csv")
 
     print(" Starting Sentiment Analysis...")
-    run_sentiment_pipeline("data/company_news_v2.csv", "data/articles_with_finbert_sentiment.csv")
+    add_sentiment_from_summary_to_csv("data/company_news_v2.csv", "data/articles_with_finbert_sentiment.csv")
 
     print(" Fetching Stock Price Change...")
     add_price_change_to_csv("data/articles_with_finbert_sentiment.csv", "data/articles_with_price_change.csv")

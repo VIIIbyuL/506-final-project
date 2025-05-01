@@ -49,6 +49,14 @@ To ensure reliability in our model we implemented:
 
 We used a Random Forest Classifier to predict whether article sentiment would align with the movement in stock prices.
 
+We decided not to add a regression evaluation because it doesn’t align with our project’s main goal. Our objective is to predict whether a stock's price will go up or down based on news sentiment and market features — that’s a classification task, not a regression task.
+
+While we use a regressor to generate next-day price change estimates (like +1.2% or -0.8%), those numbers are mostly for demonstration purposes, not formal evaluation. What we actually care about — and what we evaluate with precision, recall, accuracy, etc. — is the direction of the price change.
+
+Adding a full regression evaluation (e.g., MAE, R²) would only be useful if we were trying to accurately model the magnitude of price change, which we’re not focusing on. It would also complicate the pipeline without providing useful insights for our classification goal.
+
+So we kept the regressor in to display directional predictions per company, but the classifier is the only model being rigorously evaluated, since it's the one answering our core question: Can we predict stock movement direction from sentiment?
+
 ### A. Confusion Matrices
 
 #### Random Split  
