@@ -13,15 +13,10 @@ from src.sentiment_analysis import add_sentiment_from_summary_to_csv
 from src.price_fetching import add_price_change_to_csv
 from src.generate_labels import build_alignment_dataset
 from src.model import main as run_all_evaluations
-from src.stock_news_api import run_news_scraper
+
 
 def main():
-    # For speed, we have already ran the scraper into the data/company_news_v2.csv file. 
-    # If you want to re-run the scraper, uncomment the following lines just be aware that
-    # it will take a while to run.
-
-    # print(" Scraping News Articles...")
-    # run_news_scraper("data/company_news_v2.csv")
+    # For speed, we have already ran the scraper into the data/company_news_v2.csv file.
 
     print(" Starting Sentiment Analysis...")
     add_sentiment_from_summary_to_csv("data/company_news_v2.csv", "data/articles_with_finbert_sentiment.csv")
