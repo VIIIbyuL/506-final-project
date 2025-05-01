@@ -2,7 +2,7 @@
 # NewsToStocks
 
 ## Description
-News Vs. Stock price analysis. Based on recent articles from sources such as NYT, etc. how does one article result in stock price increase or decrease.
+News Vs. Stock price analysis. Based on recent articles from sources such as NYT, etc. how does one article result in stock price increase or decrease for three popular companies.
 
 ## Running Instruction
 1. install dependencies with make install
@@ -16,7 +16,7 @@ To analyze how news articles from sources like The New York Times impact stock p
 
 ## Data Collection and Methods
 
-The data that needs to be collected are articles that come out from past and present, so that we can analyze whether they are positive and negative. We use an API or web scrape articles across different new outlets and use another API like Yahoo Finance to see a stock’s price change at the time of the article’s release. 
+The data that needs to be collected are articles that come out from past and present, so that we can analyze whether they are positive and negative. We use an API or web scrape articles across different new outlets and use another API like Yahoo Finance to see a stock’s price change at the time of the article’s release. One problem we ran into was since we were free tier we could not extract as many companies as we wanted alongside our data. As a result, we just focused on three companies.
 
 
 ## Data Modelling
