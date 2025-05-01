@@ -203,47 +203,87 @@ def kfold_evaluation(X, y):
     print("Mean Accuracy:", scores.mean())
     save_kfold_scores(scores)
 
-def prepare_features_for_prediction(df, days_back):
-    features = []
-    target = []
-    
-    # Sort dataframe by Date in ascending order (ensure correct order)
+# preparing the features 
+
+def prepare_features_for_prediction(df, lookback_window=3):
+    df = df.copy()
+    df["Date"] = pd.to_datetime(df["Date"])
     df = df.sort_values("Date")
     
-    # Get the latest `days_back` distinct dates
-    latest_dates = df['Date'].drop_duplicates().tail(days_back).values
-    
-    # Loop through the latest `days_back` dates
-    for date in latest_dates:
-        # Filter data for the current date
-        day_window = df[df['Date'] == date]
-        # Ensure there are articles for the current day
-        if len(day_window) > 0:
-            # Average the features across all articles for the day
-            confidence_values = day_window['finbert_confidence_percent'].mean()
-            day_of_week_values = day_window['day_of_week'].mode()[0]  # Take the most frequent day of week
-            month_values = day_window['month'].mode()[0]  # Take the most frequent month
-            
-            # Count the number of positive, neutral, and negative articles
-            positive_count = day_window[day_window['sentiment_encoded'] == 1].shape[0]
-            negative_count = day_window[day_window['sentiment_encoded'] == -1].shape[0]
-            neutral_count = day_window[day_window['sentiment_encoded'] == 0].shape[0]
+    # Ensure numeric columns are properly typed
+    df["finbert_confidence_percent"] = pd.to_numeric(df["finbert_confidence_percent"], errors="coerce")
+    df["price_change_percent"] = pd.to_numeric(df["price_change_percent"], errors="coerce")
+    df["prev_day_change"] = pd.to_numeric(df["prev_day_change"], errors="coerce")
+    df["sp500_change"] = pd.to_numeric(df["sp500_change"], errors="coerce")
+    df["nasdaq_change"] = pd.to_numeric(df["nasdaq_change"], errors="coerce")
+    df["vix_change"] = pd.to_numeric(df["vix_change"], errors="coerce")
 
-            # Calculate the total number of articles for normalization
-            total_articles = len(day_window)
+    features = []
+    targets = []
+    dates = sorted(df["Date"].unique())
+    last_feature_row = None
 
-            # Compute the proportions of each sentiment
-            positive_ratio = positive_count / total_articles
-            negative_ratio = negative_count / total_articles
-            neutral_ratio = neutral_count / total_articles
+    for i in range(lookback_window, len(dates) - 1):  # Training pairs
+        current_date = dates[i]
+        next_date = dates[i + 1]
+        window_dates = dates[i - lookback_window:i]
 
-            # Now include these proportions as features
-            features.append(np.array([positive_ratio, negative_ratio, neutral_ratio, confidence_values, day_of_week_values, month_values]))
-            target.append(day_window['price_change_percent'].iloc[0])  # Use the first price_change_percent for this date (assuming it's the same for the day)
-    
-    features = np.array(features)
-    target = np.array(target)
-    return features, target
+        window_df = df[df["Date"].isin(window_dates)]
+        current_df = df[df["Date"] == current_date]
+        next_df = df[df["Date"] == next_date]
+
+        if len(current_df) == 0 or len(next_df) == 0 or len(window_df) == 0:
+            continue
+
+        row = compute_feature_row(current_df, window_df)
+        features.append(row)
+        targets.append(next_df["price_change_percent"].iloc[0])
+
+    # Last row for predicting the *next* day's change
+    if len(dates) >= lookback_window:
+        current_date = dates[-1]
+        window_dates = dates[-lookback_window:]
+        window_df = df[df["Date"].isin(window_dates)]
+        current_df = df[df["Date"] == current_date]
+
+        if not current_df.empty and not window_df.empty:
+            last_feature_row = compute_feature_row(current_df, window_df)
+
+    return np.array(features), np.array(targets), last_feature_row
+
+def compute_feature_row(current_df, window_df):
+    confidence = current_df["finbert_confidence_percent"].mean()
+    sp500 = current_df["sp500_change"].mean()
+    nasdaq = current_df["nasdaq_change"].mean()
+    vix = current_df["vix_change"].mean()
+
+    positive_ratio = (current_df["finbert_sentiment_label"] == "positive").mean()
+    negative_ratio = (current_df["finbert_sentiment_label"] == "negative").mean()
+    neutral_ratio = (current_df["finbert_sentiment_label"] == "neutral").mean()
+
+    article_volume_today = len(current_df)
+
+    hist_price_mean = window_df["price_change_percent"].mean()
+    hist_price_std = window_df["price_change_percent"].std()
+    hist_conf_mean = window_df["finbert_confidence_percent"].mean()
+    hist_volume_mean = window_df.groupby("Date").size().mean()
+
+    volume_delta = article_volume_today - hist_volume_mean
+
+    return [
+        confidence,
+        sp500,
+        nasdaq,
+        vix,
+        positive_ratio,
+        negative_ratio,
+        neutral_ratio,
+        hist_price_mean,
+        hist_price_std,
+        hist_conf_mean,
+        article_volume_today,
+        volume_delta,
+    ]
 
 
 def train_model(X_train, y_train):
@@ -253,36 +293,44 @@ def train_model(X_train, y_train):
 
 # Prediction for each company
 
-# def predict_for_each_company(df, days_back):
-#     print("\n [4] NEXT DAY PREDICTIONS")
-#     companies = df["Company"].unique()
+def predict_for_each_company(df):
+    print("\n [4] NEXT DAY OPENER PREDICTIONS")
+    companies = df["Company"].unique()
     
-#     predictions = []
+    predictions = []
     
-#     for company in companies:
-#         company_df = df[df["Company"] == company]
-#         X, y = prepare_features_for_prediction(company_df, days_back)
-        
-#         # Train model for the company
-#         model = train_model(X, y)
-        
-#         # Get predicted trend (Up or Down)
-#         predicted_price_change = model.predict(X[-1].reshape(1, -1))[0]
-#         trend = "Up" if predicted_price_change > 0 else "Down"
-        
-#         # Store predictions
-#         predictions.append({
-#             "Company": company,
-#             "Predicted Trend": trend,
-#             "Predicted Price Change (%)": predicted_price_change
-#         })
+    for company in companies:
+        company_df = df[df["Company"] == company]
+        company_df = company_df.sort_values("Date")
+        X, y, last_feature_row = prepare_features_for_prediction(company_df, 3)
+
+        if len(X) > 0:  # Ensure that we have at least one valid training example
+            # Train model for the company
+            model = train_model(X, y)
+            
+            # Get predicted trend (Up or Down) for the *next* day after the last available data
+            if last_feature_row is not None:
+                last_feature_row = np.array(last_feature_row)
+                predicted_price_change = model.predict(last_feature_row.reshape(1, -1))[0]
+                trend = "Up" if predicted_price_change > 0 else "Down"
+                
+                # Store predictions
+                predictions.append({
+                    "Company": company,
+                    "Predicted Trend": trend,
+                    "Predicted Price Change (%)": predicted_price_change
+                })
+            else:
+                print(f"No valid data to predict for {company}")
+        else:
+            print(f"No training data for {company}")
     
-#     return predictions
+    return predictions
 
 # main
 
 def main():
-    df = load_data("data/articles_with_alignment_labels.csv")
+    df = load_data("../data/articles_with_alignment_labels_v2.csv")
     X, y = prepare_features(df)
 
     random_split_evaluation(X, y)
@@ -297,12 +345,12 @@ def main():
     plot_price_change_counts_for_company(df, "Amazon", filename="price_change_counts_amazon.png")
     plot_price_change_counts_for_company(df, "Tesla", filename="price_change_counts_tesla.png")   
     
-    # # Predict for each company
-    # predictions = predict_for_each_company(df, 7)
+    # Predict for each company
+    predictions = predict_for_each_company(df)
     
-    # # Print the predictions for each company
-    # for prediction in predictions:
-    #     print(f"Company: {prediction['Company']}\nPredicted Trend: {prediction['Predicted Trend']}\nPredicted Price Change: {prediction['Predicted Price Change (%)']}%")
+    # Print the predictions for each company
+    for prediction in predictions:
+        print(f"Company: {prediction['Company']}\nPredicted Trend: {prediction['Predicted Trend']}\nPredicted Price Change: {prediction['Predicted Price Change (%)']}%")
 
 if __name__ == "__main__":
     main()
