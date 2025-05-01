@@ -110,16 +110,28 @@ def plot_price_change_counts_for_company(df, company_name, filename):
 
 def load_data(csv_path):
     df = pd.read_csv(csv_path)
-    df = df.dropna(subset=["alignment_label", "finbert_sentiment_label", "finbert_confidence_percent", "Date"])
     df["Date"] = pd.to_datetime(df["Date"])
+
     sentiment_map = {"Positive": 1, "Neutral": 0, "Negative": -1}
     df["sentiment_encoded"] = df["finbert_sentiment_label"].map(sentiment_map)
     df["day_of_week"] = df["Date"].dt.dayofweek
     df["month"] = df["Date"].dt.month
+
+    # Drop rows with any missing critical features
+    df = df.dropna(subset=[
+        "alignment_label", "sentiment_encoded", "finbert_confidence_percent",
+        "prev_day_change", "sp500_change", "nasdaq_change", "vix_change"
+    ])
+
     return df
 
+
 def prepare_features(df):
-    feature_cols = ["sentiment_encoded", "finbert_confidence_percent", "day_of_week", "month"]
+    feature_cols = [
+        "sentiment_encoded", "finbert_confidence_percent",
+        "day_of_week", "month",
+        "prev_day_change", "sp500_change", "nasdaq_change", "vix_change"
+    ]
     X = df[feature_cols]
     y = df["alignment_label"]
     return X, y
@@ -129,7 +141,14 @@ def prepare_features(df):
 def random_split_evaluation(X, y):
     print("\n [1] RANDOM TRAIN/TEST SPLIT")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    clf = RandomForestClassifier(random_state=42)
+    clf = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=5,
+        min_samples_split=10,
+        min_samples_leaf=5,
+        random_state=42
+    )
+
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
 
@@ -146,7 +165,13 @@ def time_split_evaluation(df):
     X_train, y_train = prepare_features(train_df)
     X_test, y_test = prepare_features(test_df)
 
-    clf = RandomForestClassifier(random_state=42)
+    clf = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=5,
+        min_samples_split=10,
+        min_samples_leaf=5,
+        random_state=42
+    )
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
 
@@ -156,8 +181,24 @@ def time_split_evaluation(df):
 
 def kfold_evaluation(X, y):
     print("\n [3] K-FOLD CROSS-VALIDATION")
-    clf = RandomForestClassifier(random_state=42)
-    scores = cross_val_score(clf, X, y, cv=5, scoring='accuracy')
+    clf = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=5,
+        min_samples_split=10,
+        min_samples_leaf=5,
+        random_state=42
+    )
+    scores = cross_val_score(
+        RandomForestClassifier(
+            n_estimators=100,
+            max_depth=5,
+            min_samples_split=10,
+            min_samples_leaf=5,
+            random_state=42
+        ),
+        X, y, cv=5, scoring='accuracy'
+    )
+
     print("K-Fold Scores:", scores)
     print("Mean Accuracy:", scores.mean())
     save_kfold_scores(scores)
@@ -212,31 +253,31 @@ def train_model(X_train, y_train):
 
 # Prediction for each company
 
-def predict_for_each_company(df, days_back):
-    print("\n [4] NEXT DAY PREDICTIONS")
-    companies = df["Company"].unique()
+# def predict_for_each_company(df, days_back):
+#     print("\n [4] NEXT DAY PREDICTIONS")
+#     companies = df["Company"].unique()
     
-    predictions = []
+#     predictions = []
     
-    for company in companies:
-        company_df = df[df["Company"] == company]
-        X, y = prepare_features_for_prediction(company_df, days_back)
+#     for company in companies:
+#         company_df = df[df["Company"] == company]
+#         X, y = prepare_features_for_prediction(company_df, days_back)
         
-        # Train model for the company
-        model = train_model(X, y)
+#         # Train model for the company
+#         model = train_model(X, y)
         
-        # Get predicted trend (Up or Down)
-        predicted_price_change = model.predict(X[-1].reshape(1, -1))[0]
-        trend = "Up" if predicted_price_change > 0 else "Down"
+#         # Get predicted trend (Up or Down)
+#         predicted_price_change = model.predict(X[-1].reshape(1, -1))[0]
+#         trend = "Up" if predicted_price_change > 0 else "Down"
         
-        # Store predictions
-        predictions.append({
-            "Company": company,
-            "Predicted Trend": trend,
-            "Predicted Price Change (%)": predicted_price_change
-        })
+#         # Store predictions
+#         predictions.append({
+#             "Company": company,
+#             "Predicted Trend": trend,
+#             "Predicted Price Change (%)": predicted_price_change
+#         })
     
-    return predictions
+#     return predictions
 
 # main
 
@@ -247,7 +288,7 @@ def main():
     random_split_evaluation(X, y)
     time_split_evaluation(df)
     kfold_evaluation(X, y)
-    predict_next_day(df, num_days=7)
+    # predict_next_day(df, num_days=7)
     plot_sentiment_counts_per_company(df, "Apple", filename="sentiment_counts_apple.png")
     plot_sentiment_counts_per_company(df, "Amazon", filename="sentiment_counts_amazon.png")
     plot_sentiment_counts_per_company(df, "Tesla", filename="sentiment_counts_tesla.png")
@@ -256,12 +297,12 @@ def main():
     plot_price_change_counts_for_company(df, "Amazon", filename="price_change_counts_amazon.png")
     plot_price_change_counts_for_company(df, "Tesla", filename="price_change_counts_tesla.png")   
     
-    # Predict for each company
-    predictions = predict_for_each_company(df, 7)
+    # # Predict for each company
+    # predictions = predict_for_each_company(df, 7)
     
-    # Print the predictions for each company
-    for prediction in predictions:
-        print(f"Company: {prediction['Company']}\nPredicted Trend: {prediction['Predicted Trend']}\nPredicted Price Change: {prediction['Predicted Price Change (%)']}%")
+    # # Print the predictions for each company
+    # for prediction in predictions:
+    #     print(f"Company: {prediction['Company']}\nPredicted Trend: {prediction['Predicted Trend']}\nPredicted Price Change: {prediction['Predicted Price Change (%)']}%")
 
 if __name__ == "__main__":
     main()
