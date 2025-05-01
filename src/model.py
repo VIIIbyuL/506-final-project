@@ -330,7 +330,7 @@ def predict_for_each_company(df):
 # main
 
 def main():
-    df = load_data("../data/articles_with_alignment_labels_v2.csv")
+    df = load_data("data/articles_with_alignment_labels_v2.csv")
     X, y = prepare_features(df)
 
     random_split_evaluation(X, y)
