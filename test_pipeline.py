@@ -16,7 +16,7 @@ def test_prepare_features_on_sample_row():
         "vix_change": [-4.154080062256782],
         "alignment_label": [0],
         "price_change_percent": [0.940659289762006],
-        "price_direction": [1]  # You may add this during load_data
+        "price_direction": [1]  
     }
 
     df = pd.DataFrame(data)
