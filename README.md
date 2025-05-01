@@ -9,6 +9,9 @@ News Vs. Stock price analysis. Based on recent articles from sources such as NYT
 2. run by using make run-all
 3. run tests by doing make test
 
+Note: There might be an error on paths because it's dependant on where you are in the terminal. If running in src, then it should
+start with "../data/<csv name>"
+
 ## Clear Goal(s)
 
 To analyze how news articles from sources like The New York Times impact stock price fluctuations. Specifically, the project aims to determine whether an article leads to a stock price increase or decrease based on sentiment analysis.
@@ -134,7 +137,9 @@ We processed article-level news data from finhub and linked it with sentiment:
 
 We formulated this as a binary classification task to predict whether an article’s sentiment aligns with short-term stock price movement.
 
-Our primary model was a RandomForestClassifier, trained on the features described above and using the alignment_label as the target variable. Random forests provided strong performance with interpretability (via feature importance) and robustness to noise.
+Our primary model was a RandomForestRegressor, trained on the features described above with extra features that get calculated. More specifically, since it's important to take into consideration the most recent days of news and data before making a prediction, we give more weight to those by getting the past 3 days worth of and using the price change percent of the next day as the target variable. This will train the model with the features of a given day and the results of those features from the next. 
+
+We also used Random forests since it provided strong performance with interpretability (via feature importance) and robustness to noise.
 
 We also experimented with other models, including:
    - Logistic Regression with hyperparameter tuning via GridSearchCV
