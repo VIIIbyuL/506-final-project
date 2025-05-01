@@ -5,6 +5,9 @@
 News Vs. Stock price analysis. Based on recent articles from sources such as NYT, etc. how does one article result in stock price increase or decrease.
 
 ## Running Instruction
+1. install dependencies with make install
+2. run by using make run-all
+3. run tests by doing make test
 
 ## Clear Goal(s)
 
@@ -13,20 +16,20 @@ To analyze how news articles from sources like The New York Times impact stock p
 
 ## Data Collection and Methods
 
-The data that needs to be collected are articles that come out from past and present, so that we can analyze whether they are positive and negative. We can use an API or web scrape articles across different new outlets and use another API like Yahoo Finance to see a stock’s price change at the time of the article’s release. 
+The data that needs to be collected are articles that come out from past and present, so that we can analyze whether they are positive and negative. We use an API or web scrape articles across different new outlets and use another API like Yahoo Finance to see a stock’s price change at the time of the article’s release. 
 
 
 ## Data Modelling
 
-First, we’d need to use a NLP model to more accurately understand the meaning behind an article. Then, we plan on modeling the data through a linear regression model that associates the degree of positivity/negativity with past occurrences of increase/decrease in stock price
+We used a financial-domain NLP model, FinBERT, to extract sentiment polarity (Positive, Neutral, Negative) and confidence from each article. We then built a binary classification model using features such as sentiment, market context (e.g., S&P500, NASDAQ, VIX), and date features to predict whether the article's sentiment direction aligned with short-term stock price movement.
 
 
 ## Data Visualization
 
-We plan on using scatter plots, box plots, and other various data visualization methods to plot the sentiment scores versus the stock price variations to view changes. Additionally, we would have a time series plot to view the stock price fluctuations while marking article release. Finally, we would have heatmaps to view the correlation matrix between sentiment and stock price changes.
+We visualized the data using several methods. Confusion matrices were generated to evaluate model performance on different splits (random, time-based, cross-validation). Feature importance bar plots were used to understand which features the model relied on most, with FinBERT sentiment and confidence showing the strongest influence. Additionally, we plotted sentiment label distributions per company, sentiment trends over time, and stock price change distributions to better understand patterns in the dataset.
 
 ## Test Plan
-To ensure reliability in our model we will implement:
+To ensure reliability in our model we implemented:
 1) Train test split: divides the dataset into 80 percent training data and 20 percent testing data to train the model on the training set and test the performance on unseen testing set of 20 percent to evaluate adaptability to new info.
 2) Time split: we train the model on past data in previous months and test it on future data in the upcoming months to predict the stock movements.
 3) k fold: we divide into folds and train model on k-1 folds and the remaining kth fold is used for testing. We would repeat each k time and rotate the fold to be different to prevent overfitting.
@@ -35,6 +38,7 @@ To ensure reliability in our model we will implement:
 
 ## Final + Midterm Presentation Video  
 [https://www.youtube.com/watch?v=xR99wpB2_nc&ab_channel=ChangWang]
+[final video here]
 
 ---
 
