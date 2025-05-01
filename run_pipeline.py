@@ -9,11 +9,11 @@ Runs the full end-to-end pipeline:
 """
 
 
-from sentiment_analysis import add_sentiment_from_summary_to_csv
-from price_fetching import add_price_change_to_csv
-from generate_labels import build_alignment_dataset
-from model import main as run_all_evaluations
-from stock_news_api import run_news_scraper
+from src.sentiment_analysis import add_sentiment_from_summary_to_csv
+from src.price_fetching import add_price_change_to_csv
+from src.generate_labels import build_alignment_dataset
+from src.model import main as run_all_evaluations
+from src.stock_news_api import run_news_scraper
 
 def main():
     # For speed, we have already ran the scraper into the data/company_news_v2.csv file. 
