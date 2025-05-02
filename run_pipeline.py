@@ -16,7 +16,7 @@ from src.model import main as run_all_evaluations
 
 
 def main():
-    # For speed, we have already ran the scraper into the data/company_news_v2.csv file.
+    # For speed, we have already ran the scraper into the data/more_news.csv file.
 
     print(" Starting Sentiment Analysis...")
     add_sentiment_from_summary_to_csv("data/more_news.csv", "data/articles_with_finbert_sentiment.csv")

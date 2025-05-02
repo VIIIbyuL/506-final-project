@@ -85,20 +85,21 @@ def plot_sentiment_trends_over_time(df, sentiment_column='finbert_sentiment_labe
     plt.close()
 
 def plot_price_change_counts_for_company(df, company_name, filename):
-    # Filter the DataFrame for the specified company
     company_df = df[df['Company'] == company_name]
 
-    # Count occurrences of each price_change_percent for the company
-    price_change_counts = company_df['price_change_percent'].value_counts()
+    # Define bins (adjust the range and bin width as needed)
+    bins = np.arange(-10, 10.5, 1)  # e.g., -10% to +10% in 1% steps
+    labels = [f"{int(b)} to {int(b+1)}%" for b in bins[:-1]]
 
-    # Sort the price change counts by the index (price_change_percent) in ascending order
-    price_change_counts = price_change_counts.sort_index()
+    # Cut price_change_percent into bins
+    binned = pd.cut(company_df['price_change_percent'], bins=bins, labels=labels, include_lowest=True)
+    price_change_counts = binned.value_counts().sort_index()
 
-    # Create a bar plot
+    # Plot
     price_change_counts.plot(kind='bar', figsize=(10, 6), width=0.8, color='skyblue')
 
-    plt.title(f'Count of Price Change Percent for {company_name}')
-    plt.xlabel('Price Change Percent')
+    plt.title(f'Binned Price Change Percent for {company_name}')
+    plt.xlabel('Price Change Range')
     plt.ylabel('Count')
     plt.xticks(rotation=45)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
