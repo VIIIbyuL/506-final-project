@@ -69,13 +69,13 @@ So we kept the regressor in to display directional predictions per company, but 
 
 #### Random Split  
 This table shows how many articles were correct or incorrectly predicted with alignment.
-![Random Confusion Matrix](visual/confusion_random.png)
+![Random Confusion Matrix](src/visual/confusion_random.png)
 
 In the random 80 20 tran test split, the model achieved high precision and recall. The overall accuracy was 94% with strength on the majority class performance. The high scors here confirm that the model had learned meaningful patterns in the data than memorizing the information.
 
 #### Time-Based Split  
 This tests the model ability to classify the future which uses old articles to predict newer ones.
-![Time Confusion Matrix](visual/confusion_time.png)
+![Time Confusion Matrix](src/visual/confusion_time.png)
 
 This had a lower accuracy of 80% by training the model on the earlier dates and testing on the future data. This drop in performance is to be expected in temporal generalization but it still generalizes well to unseen time periods suggesting no overfitting. Its presents stable relationships.
 
