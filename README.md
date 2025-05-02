@@ -6,11 +6,19 @@ News Vs. Stock price analysis. Based on recent articles from sources such as NYT
 
 ## Running Instruction
 1. install dependencies with make install
-2. run by using make run-all
+2. run by using make run-all (this simulates the entire pipeline process starting from our source csv of more_news.csv) (this may take a while)
 3. run tests by doing make test
 
-Note: There might be an error on paths because it's dependant on where you are in the terminal. If running in src, then it should
-start with "../data/<csv name>"
+We left out the news scraping portion it is all located inside the more_news.csv since this step takes an extremely long time.
+
+## Important Files
+
+- more_news.csv: our scraped dataset to be used
+- visual folder: contains all our visualizations
+- Sentiment_analysis: runs sentiment on the dataset
+- price_fetching: all price fetching information done and added to dataset
+- generate_labels: produces the final dataset with the labels of price and sentiment alignment
+- model.py: our main file where the training, eval, visual creation happens
 
 ## Clear Goal(s)
 
@@ -61,29 +69,29 @@ So we kept the regressor in to display directional predictions per company, but 
 
 #### Random Split  
 This table shows how many articles were correct or incorrectly predicted with alignment.
-![Random Confusion Matrix](src/visual/confusion_random.png)
+![Random Confusion Matrix](visual/confusion_random.png)
 
-In the random 80 20 tran test split, the model achieved high precision and recall. The high scors here confirm that the model had learned meaningful patterns in the data than memorizing the information.
+In the random 80 20 tran test split, the model achieved high precision and recall. The overall accuracy was 94% with strength on the majority class performance. The high scors here confirm that the model had learned meaningful patterns in the data than memorizing the information.
 
 #### Time-Based Split  
 This tests the model ability to classify the future which uses old articles to predict newer ones.
-![Time Confusion Matrix](src/visual/confusion_time.png)
+![Time Confusion Matrix](visual/confusion_time.png)
 
-This had a lower accuracy by training the model on the earlier dates and testing on the future data. This drop in performance is to be expected in temporal generalization but it still generalizes well to unseen time periods suggesting no overfitting. Its presents stable relationships.
+This had a lower accuracy of 80% by training the model on the earlier dates and testing on the future data. This drop in performance is to be expected in temporal generalization but it still generalizes well to unseen time periods suggesting no overfitting. Its presents stable relationships.
 
 ---
 
 ### B. Feature Importance
 
 #### Random Split  
-![Feature Importance – Random](src/visual/feature_importance_random.png)
+![Feature Importance – Random](visual/feature_importance_random.png)
 This bar chart shows which input features the model relies on to make the predictions. We got this from Random Forest telling us which feature is used in what decision.
 
 The chart indicates that sentiment was the most critical followed by the prev day change and the finbert confidence percent were moderately important. The market context features also had some decent impact. This just shows the model leanrs from sentiment and enhances with market context.
 
 
 #### Time-Based Split  
-![Feature Importance – Time](src/visual/feature_importance_time.png)
+![Feature Importance – Time](visual/feature_importance_time.png)
 
 Chart from model trained on older data and tested on newer articles to confirm that the model focuses on the most important features and protect over time. Same as before.
 
@@ -92,28 +100,28 @@ Chart from model trained on older data and tested on newer articles to confirm t
 ### C. K-Fold Cross-Validation Accuracy
 
 Shows model stability across different data splits.  
-![K-Fold Accuracy](src/visual/kfold_scores.png)
+![K-Fold Accuracy](visual/kfold_scores.png)
 
-Each of these bars in this chart shows the accuracy on different chunks of the dataset. We split into 5 and train 4 and test on 1 and rotate on all 5. The folds seem to perform well and consistently.
+Each of these bars in this chart shows the accuracy on different chunks of the dataset. We split into 5 and train 4 and test on 1 and rotate on all 5. The folds ranged from arounid 63-94 percent. While Fold 3 showed notably high accuracy (~95%), other folds ranged from ~62% to ~79%, indicating some variance across validation splits. This suggests potential label imbalance or variability in sample difficulty across folds. Nonetheless, the model achieved a mean cross-validation accuracy of ~73%, demonstrating moderate and acceptable generalizability
 
 ---
 
 ### D. Price Change Counts Per Company
-![Apple Count Price Change](src/visual/price_change_counts_apple.png)
-![Amazon Count Price Change](src/visual/price_change_counts_amazon.png)
-![Tesla Count Price Change](src/visual/price_change_counts_tesla.png)
+![Apple Count Price Change](visual/price_change_counts_apple.png)
+![Amazon Count Price Change](visual/price_change_counts_amazon.png)
+![Tesla Count Price Change](visual/price_change_counts_tesla.png)
 
 Each company depicted shows the number of new articles associated with each price fluctuation. Each price is categorized as it's own "bucket" storing n number of news articles/counts. Describes the relationship between the price fluctuations and article release.
 
 ### E. Sentiment Counts Per Company
-![Apple Count Price Change](src/visual/sentiment_counts_apple.png)
-![Amazon Count Price Change](src/visual/sentiment_counts_amazon.png)
-![Tesla Count Price Change](src/visual/sentiment_counts_tesla.png)
+![Apple Count Price Change](visual/sentiment_counts_apple.png)
+![Amazon Count Price Change](visual/sentiment_counts_amazon.png)
+![Tesla Count Price Change](visual/sentiment_counts_tesla.png)
 
 Each company depicted shows the total number of each sentiment that appeared in the news within the researched time frame. Generally shows the public opinion/news view on the company.
 
 ### F. Sentiment Trends of Each Company Overtime
-![Sentiment Changes Over time](src/visual/sentiment_trends_over_time.png)
+![Sentiment Changes Over time](visual/sentiment_trends_over_time.png)
 
 Chart displays the change on sentiment counts across companies over time. General spikes shows increasing news trends that affect specific industries or company patterns.
 
@@ -175,40 +183,40 @@ Before Adding Market Features:
 AFTER:
 
  [1] RANDOM TRAIN/TEST SPLIT
-              precision    recall  f1-score   support
+Class	Precision	Recall	F1-Score	Support
+0	0.91	0.98	0.95	4929
+1	0.89	0.66	0.76	1331
 
-           0       0.93      0.99      0.96       113
-           1       0.96      0.76      0.85        34
-
-    accuracy                           0.94       147
-   macro avg       0.95      0.88      0.91       147
-weighted avg       0.94      0.94      0.94       147
-
+Accuracy: 0.91
+Macro Avg: Precision 0.90, Recall 0.82, F1 0.85
+Weighted Avg: Precision 0.91, Recall 0.91, F1 0.91
 
  [2] TIME-BASED SPLIT
-              precision    recall  f1-score   support
+Class	Precision	Recall	F1-Score	Support
+0	0.84	0.96	0.90	4484
+1	0.86	0.54	0.66	1776
 
-           0       0.82      0.93      0.87       107
-           1       0.70      0.47      0.57        40
-
-    accuracy                           0.80       147
-   macro avg       0.76      0.70      0.72       147
-weighted avg       0.79      0.80      0.79       147
-
+Accuracy: 0.84
+Macro Avg: Precision 0.85, Recall 0.75, F1 0.78
+Weighted Avg: Precision 0.85, Recall 0.84, F1 0.83
 
  [3] K-FOLD CROSS-VALIDATION
-K-Fold Scores: [0.6462585  0.67346939 0.94557823 0.78911565 0.62328767]
-Mean Accuracy: 0.735541887988072
+K-Fold Scores:
+[0.88658147, 0.87332268, 0.8784345, 0.89600639, 0.91741214]
+
+Mean Accuracy: 0.8903514376996805
+
+
 
 What this means:
 [1] Random Train/Test Split
-This setup randomly partitions the data, allowing both past and future data to appear in training and test sets. The model achieves 94% accuracy with strong precision and recall for both classes, indicating high overall performance. The high recall for class 1 (alignment) suggests the model successfully identifies aligned cases even when they’re less frequent.
+This setup randomly partitions the data, allowing both past and future data to appear in training and test sets. The model achieves 91% accuracy with strong precision and recall for both classes, indicating high overall performance. The high recall for class 1 (alignment) suggests the model successfully identifies aligned cases even when they’re less frequent.
 
 [2] Time-Based Split
-In this more realistic scenario, the model is trained on earlier data and tested on later, unseen data—simulating forward prediction. Performance drops slightly to 80% accuracy, with a notable decline in recall for class 1 (0.47). This reflects the increased difficulty in generalizing to future, possibly unseen patterns.
+In this more realistic scenario, the model is trained on earlier data and tested on later, unseen data—simulating forward prediction. Performance drops slightly to 84% accuracy, with a notable decline in recall for class 1 (0.47). This reflects the increased difficulty in generalizing to future, possibly unseen patterns.
 
 [3] K-Fold Cross-Validation
-Cross-validation provides robustness by averaging performance over multiple train/test splits. Scores vary by fold, with one notably high fold (0.94) and some lower ones. The mean accuracy is ~73.5%, which is lower than the random split but consistent with the time-based result. This suggests some variability in performance, but still supports general model stability.
+Cross-validation provides robustness by averaging performance over multiple train/test splits. Scores vary by fold, with one notably high fold (0.94) and some lower ones. The mean accuracy is ~89%, which is lower than the random split but consistent with the time-based result. This suggests some variability in performance, but still supports general model stability.
 ---
 
 ## 5. Key Learnings
@@ -243,6 +251,5 @@ Cross-validation provides robustness by averaging performance over multiple trai
 - training with larger time spans or larger news
 
 ---
-
 
 
