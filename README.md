@@ -61,13 +61,13 @@ So we kept the regressor in to display directional predictions per company, but 
 
 #### Random Split  
 This table shows how many articles were correct or incorrectly predicted with alignment.
-![Random Confusion Matrix](visual/confusion_random.png)
+![Random Confusion Matrix](src/visual/confusion_random.png)
 
 In the random 80 20 tran test split, the model achieved high precision and recall. The overall accuracy was 94% with strength on the majority class performance. The high scors here confirm that the model had learned meaningful patterns in the data than memorizing the information.
 
 #### Time-Based Split  
 This tests the model ability to classify the future which uses old articles to predict newer ones.
-![Time Confusion Matrix](visual/confusion_time.png)
+![Time Confusion Matrix](src/visual/confusion_time.png)
 
 This had a lower accuracy of 80% by training the model on the earlier dates and testing on the future data. This drop in performance is to be expected in temporal generalization but it still generalizes well to unseen time periods suggesting no overfitting. Its presents stable relationships.
 
@@ -76,14 +76,14 @@ This had a lower accuracy of 80% by training the model on the earlier dates and 
 ### B. Feature Importance
 
 #### Random Split  
-![Feature Importance – Random](visual/feature_importance_random.png)
+![Feature Importance – Random](src/visual/feature_importance_random.png)
 This bar chart shows which input features the model relies on to make the predictions. We got this from Random Forest telling us which feature is used in what decision.
 
 The chart indicates that sentiment was the most critical followed by the prev day change and the finbert confidence percent were moderately important. The market context features also had some decent impact. This just shows the model leanrs from sentiment and enhances with market context.
 
 
 #### Time-Based Split  
-![Feature Importance – Time](visual/feature_importance_time.png)
+![Feature Importance – Time](src/visual/feature_importance_time.png)
 
 Chart from model trained on older data and tested on newer articles to confirm that the model focuses on the most important features and protect over time. Same as before.
 
@@ -92,28 +92,28 @@ Chart from model trained on older data and tested on newer articles to confirm t
 ### C. K-Fold Cross-Validation Accuracy
 
 Shows model stability across different data splits.  
-![K-Fold Accuracy](visual/kfold_scores.png)
+![K-Fold Accuracy](src/visual/kfold_scores.png)
 
 Each of these bars in this chart shows the accuracy on different chunks of the dataset. We split into 5 and train 4 and test on 1 and rotate on all 5. The folds ranged from arounid 63-94 percent. While Fold 3 showed notably high accuracy (~95%), other folds ranged from ~62% to ~79%, indicating some variance across validation splits. This suggests potential label imbalance or variability in sample difficulty across folds. Nonetheless, the model achieved a mean cross-validation accuracy of ~73%, demonstrating moderate and acceptable generalizability
 
 ---
 
 ### D. Price Change Counts Per Company
-![Apple Count Price Change](visual/price_change_counts_apple.png)
-![Amazon Count Price Change](visual/price_change_counts_amazon.png)
-![Tesla Count Price Change](visual/price_change_counts_tesla.png)
+![Apple Count Price Change](src/visual/price_change_counts_apple.png)
+![Amazon Count Price Change](src/visual/price_change_counts_amazon.png)
+![Tesla Count Price Change](src/visual/price_change_counts_tesla.png)
 
 Each company depicted shows the number of new articles associated with each price fluctuation. Each price is categorized as it's own "bucket" storing n number of news articles/counts. Describes the relationship between the price fluctuations and article release.
 
 ### E. Sentiment Counts Per Company
-![Apple Count Price Change](visual/sentiment_counts_apple.png)
-![Amazon Count Price Change](visual/sentiment_counts_amazon.png)
-![Tesla Count Price Change](visual/sentiment_counts_tesla.png)
+![Apple Count Price Change](src/visual/sentiment_counts_apple.png)
+![Amazon Count Price Change](src/visual/sentiment_counts_amazon.png)
+![Tesla Count Price Change](src/visual/sentiment_counts_tesla.png)
 
 Each company depicted shows the total number of each sentiment that appeared in the news within the researched time frame. Generally shows the public opinion/news view on the company.
 
 ### F. Sentiment Trends of Each Company Overtime
-![Sentiment Changes Over time](visual/sentiment_trends_over_time.png)
+![Sentiment Changes Over time](src/visual/sentiment_trends_over_time.png)
 
 Chart displays the change on sentiment counts across companies over time. General spikes shows increasing news trends that affect specific industries or company patterns.
 
