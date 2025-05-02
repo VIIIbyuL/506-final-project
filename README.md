@@ -248,11 +248,7 @@ Cross-validation provides robustness by averaging performance over multiple trai
 
 - add generalizations, instead of hardcoded companies we use something like NER models to find company name in an article and allow us to predict any company stock
 - maybe use other classifiers to boost performance
-- add a control variable to compare the specific stock price to (S&P 500)
-- add stock price at the start of the day
-- add stock price at the end of the day
 - develop a dashboard or API for live testing
-- include additional features like volaitility or trade volume or indicators to expand
 - need to get more article data, the api has limits and it's hard to scrape data
 - the model doesn't exactly train by group specifically, just views it indiscriminatly
 - add an emotional review of the article instead of just sentiment (positive, but happy; positive, but excited)
