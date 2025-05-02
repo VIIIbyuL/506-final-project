@@ -19,7 +19,7 @@ def main():
     # For speed, we have already ran the scraper into the data/company_news_v2.csv file.
 
     print(" Starting Sentiment Analysis...")
-    add_sentiment_from_summary_to_csv("data/company_news_v2.csv", "data/articles_with_finbert_sentiment.csv")
+    add_sentiment_from_summary_to_csv("data/more_news.csv", "data/articles_with_finbert_sentiment.csv")
 
     print(" Fetching Stock Price Change...")
     add_price_change_to_csv("data/articles_with_finbert_sentiment.csv", "data/articles_with_price_change.csv")
