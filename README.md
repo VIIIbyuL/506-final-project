@@ -34,7 +34,10 @@ The data that needs to be collected are articles that come out from past and pre
 
 We used a financial-domain NLP model, FinBERT, to extract sentiment polarity (Positive, Neutral, Negative) and confidence from each article. We then built a binary classification model using features such as sentiment, market context (e.g., S&P500, NASDAQ, VIX), and date features to predict whether the article's sentiment direction aligned with short-term stock price movement.
 
-
+Our primary model was a RandomForestRegressor, trained on the features described above with extra features that get calculated. More specifically, since it's important to take into consideration the most recent days of news and data before making a prediction, we give more weight to those by getting the past 3 days worth of and using the price change percent of the next day as the target variable. This will train the model with the features of a given day and the results of those features from the next. 
+ 
+ We also used Random forests since it provided strong performance with interpretability (via feature importance) and robustness to noise.
+ 
 ## Data Visualization
 
 We visualized the data using several methods. Confusion matrices were generated to evaluate model performance on different splits (random, time-based, cross-validation). Feature importance bar plots were used to understand which features the model relied on most, with FinBERT sentiment and confidence showing the strongest influence. Additionally, we plotted sentiment label distributions per company, sentiment trends over time, and stock price change distributions to better understand patterns in the dataset.
