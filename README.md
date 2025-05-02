@@ -6,7 +6,7 @@ News Vs. Stock price analysis. Based on recent articles from sources such as NYT
 
 ## Running Instruction
 1. install dependencies with make install
-2. run by using make run-all (this simulates the entire pipeline process starting from our source csv of more_news.csv) (this may take a while)
+2. run by using make run-all
 3. run tests by doing make test
 
 We left out the news scraping portion it is all located inside the more_news.csv since this step takes an extremely long time. To streamline evaluation and focus on model performance, we begin from a preprocessed dataset (articles_with_alignment_labels_v2.csv) that already includes sentiment scores, price change percentages, market indicators (S&P 500, NASDAQ, VIX), and alignment labels. Although our full pipeline supports scraping, sentiment analysis, and financial data merging, these steps were time-intensive and have been omitted during runtime for efficiency. All results and visualizations are based on this finalized dataset.
