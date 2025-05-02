@@ -57,9 +57,8 @@ To ensure reliability in our model we implemented:
 
 # Final + Midterm Report – News Sentiment vs. Stock Price Alignment
 
-## Final + Midterm Presentation Video  
-[https://www.youtube.com/watch?v=xR99wpB2_nc&ab_channel=ChangWang]
-[final video here]
+## Final Presentation Video  
+[https://youtu.be/tgDOaZCG5CA]
 
 ---
 
