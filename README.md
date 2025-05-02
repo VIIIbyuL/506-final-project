@@ -6,11 +6,19 @@ News Vs. Stock price analysis. Based on recent articles from sources such as NYT
 
 ## Running Instruction
 1. install dependencies with make install
-2. run by using make run-all
+2. run by using make run-all (this simulates the entire pipeline process starting from our source csv of more_news.csv)
 3. run tests by doing make test
 
-Note: There might be an error on paths because it's dependant on where you are in the terminal. If running in src, then it should
-start with "../data/<csv name>"
+We left out the news scraping portion it is all located inside the more_news.csv since this step takes an extremely long time.
+
+## Important Files
+
+- more_news.csv: our scraped dataset to be used
+- visual folder: contains all our visualizations
+- Sentiment_analysis: runs sentiment on the dataset
+- price_fetching: all price fetching information done and added to dataset
+- generate_labels: produces the final dataset with the labels of price and sentiment alignment
+- model.py: our main file where the training, eval, visual creation happens
 
 ## Clear Goal(s)
 
