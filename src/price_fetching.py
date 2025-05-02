@@ -68,7 +68,7 @@ def add_price_change_to_csv(input_file, output_file):
         ticker = row["Ticker"]
         date_str = row["Date"]
 
-        if pd.isna(ticker):
+        if pd.isna(ticker) or pd.isna(date_str):
             price_changes.append(None)
             prev_day_changes.append(None)
             sp500_changes.append(None)
@@ -76,7 +76,16 @@ def add_price_change_to_csv(input_file, output_file):
             vix_changes.append(None)
             continue
 
-        dt = pd.to_datetime(date_str)
+        try:
+            dt = pd.to_datetime(date_str)
+        except Exception as e:
+            print(f"Skipping row {idx} due to date parsing error: {e}")
+            price_changes.append(None)
+            prev_day_changes.append(None)
+            sp500_changes.append(None)
+            nasdaq_changes.append(None)
+            vix_changes.append(None)
+            continue
 
         # Get values
         change, prev = get_price_change(ticker, date_str)
@@ -110,6 +119,6 @@ def add_price_change_to_csv(input_file, output_file):
 
 if __name__ == "__main__":
     add_price_change_to_csv(
-        "data/articles_with_finbert_sentiment.csv",
-        "data/articles_with_price_change.csv"
+        "../data/articles_with_finbert_sentiment_v2.csv",
+        "../data/articles_with_price_change_v2.csv"
     )
