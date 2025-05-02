@@ -6,11 +6,19 @@ News Vs. Stock price analysis. Based on recent articles from sources such as NYT
 
 ## Running Instruction
 1. install dependencies with make install
-2. run by using make run-all
+2. run by using make run-all (this simulates the entire pipeline process starting from our source csv of more_news.csv) (this may take a while)
 3. run tests by doing make test
 
-Note: There might be an error on paths because it's dependant on where you are in the terminal. If running in src, then it should
-start with "../data/<csv name>"
+We left out the news scraping portion it is all located inside the more_news.csv since this step takes an extremely long time.
+
+## Important Files
+
+- more_news.csv: our scraped dataset to be used
+- visual folder: contains all our visualizations
+- Sentiment_analysis: runs sentiment on the dataset
+- price_fetching: all price fetching information done and added to dataset
+- generate_labels: produces the final dataset with the labels of price and sentiment alignment
+- model.py: our main file where the training, eval, visual creation happens
 
 ## Clear Goal(s)
 
@@ -26,7 +34,10 @@ The data that needs to be collected are articles that come out from past and pre
 
 We used a financial-domain NLP model, FinBERT, to extract sentiment polarity (Positive, Neutral, Negative) and confidence from each article. We then built a binary classification model using features such as sentiment, market context (e.g., S&P500, NASDAQ, VIX), and date features to predict whether the article's sentiment direction aligned with short-term stock price movement.
 
-
+Our primary model was a RandomForestRegressor, trained on the features described above with extra features that get calculated. More specifically, since it's important to take into consideration the most recent days of news and data before making a prediction, we give more weight to those by getting the past 3 days worth of and using the price change percent of the next day as the target variable. This will train the model with the features of a given day and the results of those features from the next. 
+ 
+ We also used Random forests since it provided strong performance with interpretability (via feature importance) and robustness to noise.
+ 
 ## Data Visualization
 
 We visualized the data using several methods. Confusion matrices were generated to evaluate model performance on different splits (random, time-based, cross-validation). Feature importance bar plots were used to understand which features the model relied on most, with FinBERT sentiment and confidence showing the strongest influence. Additionally, we plotted sentiment label distributions per company, sentiment trends over time, and stock price change distributions to better understand patterns in the dataset.
@@ -175,40 +186,40 @@ Before Adding Market Features:
 AFTER:
 
  [1] RANDOM TRAIN/TEST SPLIT
-              precision    recall  f1-score   support
+Class	Precision	Recall	F1-Score	Support
+0	0.91	0.98	0.95	4929
+1	0.89	0.66	0.76	1331
 
-           0       0.93      0.99      0.96       113
-           1       0.96      0.76      0.85        34
-
-    accuracy                           0.94       147
-   macro avg       0.95      0.88      0.91       147
-weighted avg       0.94      0.94      0.94       147
-
+Accuracy: 0.91
+Macro Avg: Precision 0.90, Recall 0.82, F1 0.85
+Weighted Avg: Precision 0.91, Recall 0.91, F1 0.91
 
  [2] TIME-BASED SPLIT
-              precision    recall  f1-score   support
+Class	Precision	Recall	F1-Score	Support
+0	0.84	0.96	0.90	4484
+1	0.86	0.54	0.66	1776
 
-           0       0.82      0.93      0.87       107
-           1       0.70      0.47      0.57        40
-
-    accuracy                           0.80       147
-   macro avg       0.76      0.70      0.72       147
-weighted avg       0.79      0.80      0.79       147
-
+Accuracy: 0.84
+Macro Avg: Precision 0.85, Recall 0.75, F1 0.78
+Weighted Avg: Precision 0.85, Recall 0.84, F1 0.83
 
  [3] K-FOLD CROSS-VALIDATION
-K-Fold Scores: [0.6462585  0.67346939 0.94557823 0.78911565 0.62328767]
-Mean Accuracy: 0.735541887988072
+K-Fold Scores:
+[0.88658147, 0.87332268, 0.8784345, 0.89600639, 0.91741214]
+
+Mean Accuracy: 0.8903514376996805
+
+
 
 What this means:
 [1] Random Train/Test Split
-This setup randomly partitions the data, allowing both past and future data to appear in training and test sets. The model achieves 94% accuracy with strong precision and recall for both classes, indicating high overall performance. The high recall for class 1 (alignment) suggests the model successfully identifies aligned cases even when they’re less frequent.
+This setup randomly partitions the data, allowing both past and future data to appear in training and test sets. The model achieves 91% accuracy with strong precision and recall for both classes, indicating high overall performance. The high recall for class 1 (alignment) suggests the model successfully identifies aligned cases even when they’re less frequent.
 
 [2] Time-Based Split
-In this more realistic scenario, the model is trained on earlier data and tested on later, unseen data—simulating forward prediction. Performance drops slightly to 80% accuracy, with a notable decline in recall for class 1 (0.47). This reflects the increased difficulty in generalizing to future, possibly unseen patterns.
+In this more realistic scenario, the model is trained on earlier data and tested on later, unseen data—simulating forward prediction. Performance drops slightly to 84% accuracy, with a notable decline in recall for class 1 (0.47). This reflects the increased difficulty in generalizing to future, possibly unseen patterns.
 
 [3] K-Fold Cross-Validation
-Cross-validation provides robustness by averaging performance over multiple train/test splits. Scores vary by fold, with one notably high fold (0.94) and some lower ones. The mean accuracy is ~73.5%, which is lower than the random split but consistent with the time-based result. This suggests some variability in performance, but still supports general model stability.
+Cross-validation provides robustness by averaging performance over multiple train/test splits. Scores vary by fold, with one notably high fold (0.94) and some lower ones. The mean accuracy is ~89%, which is lower than the random split but consistent with the time-based result. This suggests some variability in performance, but still supports general model stability.
 ---
 
 ## 5. Key Learnings
@@ -243,6 +254,5 @@ Cross-validation provides robustness by averaging performance over multiple trai
 - training with larger time spans or larger news
 
 ---
-
 
 
