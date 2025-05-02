@@ -18,14 +18,14 @@ from src.model import main as run_all_evaluations
 def main():
     # For speed, we have already ran the scraper into the data/more_news.csv file.
 
-    print(" Starting Sentiment Analysis...")
-    add_sentiment_from_summary_to_csv("data/more_news.csv", "data/articles_with_finbert_sentiment.csv")
+    # print(" Starting Sentiment Analysis...")
+    # add_sentiment_from_summary_to_csv("data/more_news.csv", "data/articles_with_finbert_sentiment.csv")
 
-    print(" Fetching Stock Price Change...")
-    add_price_change_to_csv("data/articles_with_finbert_sentiment.csv", "data/articles_with_price_change.csv")
+    # print(" Fetching Stock Price Change...")
+    # add_price_change_to_csv("data/articles_with_finbert_sentiment.csv", "data/articles_with_price_change.csv")
 
-    print(" Generating Alignment Labels...")
-    build_alignment_dataset("data/articles_with_price_change.csv", "data/articles_with_alignment_labels.csv")
+    # print(" Generating Alignment Labels...")
+    # build_alignment_dataset("data/articles_with_price_change.csv", "data/articles_with_alignment_labels.csv")
 
     print(" Running Model Evaluations + Visualizations...")
     run_all_evaluations()
